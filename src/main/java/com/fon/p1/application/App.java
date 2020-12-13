@@ -7,19 +7,21 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import javafx.application.Platform;
 
 /**
- * JavaFX App 
+ * JavaFX App
  */
 public class App extends Application {
 
     private static Scene scene;
-    
+
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("editor"), 640, 480);
         stage.setScene(scene);
         stage.setTitle("FON | TextEditor");
+        stage.setOnHidden(e -> Platform.exit());
         stage.show();
     }
 

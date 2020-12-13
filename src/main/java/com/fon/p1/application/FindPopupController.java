@@ -31,8 +31,8 @@ public class FindPopupController implements Initializable {
     @FXML
     private Button searchButton;
 
-//    private Function<String, Void> findFunction;
-
+    private IFindTextFunction findFunction;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -47,12 +47,10 @@ public class FindPopupController implements Initializable {
     }
 
     public void onSearchButtonAction() throws Exception {
-        //        System.out.println(EditorController.textArea.getText() +"__-" + searchBox.getText());
-//        this.findFunction.apply(searchBox.getText());
-
+        this.findFunction.operation(searchBox.getText());
     }
 
-    public void saveFindTextFunction(Function<String, Void> findFunction) {
-//        this.findFunction = findFunction;
+    public void saveFindTextFunction(IFindTextFunction findTextFunction) {
+        this.findFunction = findTextFunction;
     }
 }

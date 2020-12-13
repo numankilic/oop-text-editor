@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.fon.p1.text_manipulation;
+package com.fon.p1.application;
 
 /**
  *
  * @author pepper
  */
-public class WordList {
-    
+public interface IFindTextFunction {
+    public void operation(String find);
 }

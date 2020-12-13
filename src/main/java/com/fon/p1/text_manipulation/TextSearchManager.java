@@ -5,21 +5,20 @@
  */
 package com.fon.p1.text_manipulation;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author pepper
  */
-public class TextSearh {
-    
-    /**
-     * Wanted verilen text içerisinde aranır.
-     * -1 bulunamadığında
-     * @param wanted
-     * @return 
-     */
-    public static int find(String wanted, String textArea, int from){
+public class TextSearchManager {
+      
+    public int find(String wanted, String textArea, int from){
         return textArea.indexOf(wanted, from);
     }
     
+    public void add(String word){
+        
+    }
     
 }

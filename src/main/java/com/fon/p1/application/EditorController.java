@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -47,6 +48,8 @@ public class EditorController {
     private String filePath = "";
 
     private TextManipulator textManipulator = new TextManipulator();
+
+    private int lastFindIndex = 0;
 
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
@@ -89,7 +92,6 @@ public class EditorController {
                 alert.setTitle("Alert");
                 alert.setHeaderText(e.getLocalizedMessage());
                 alert.setContentText(e.getMessage());
-
                 alert.showAndWait();
             }
 
@@ -148,17 +150,21 @@ public class EditorController {
 
     public void onFindTextButtonClick() {
 
+        // reset lastFindIndex
+        lastFindIndex = 0;
+
         String textContent = textArea.getText();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("find_popup.fxml"));
-//            FindPopupController fpController = fxmlLoader.getController();
-//            fpController.saveFindTextFunction(this.getClass().getMethod("findText",));
+            Parent root = (Parent) fxmlLoader.load();
 
-            Parent root1 = (Parent) fxmlLoader.load();
+            FindPopupController fpController = fxmlLoader.getController();
+            fpController.saveFindTextFunction((str) -> this.findText(str));
+
             Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.WINDOW_MODAL);
             stage.setTitle("Find");
-            stage.setScene(new Scene(root1));
+            stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -166,6 +172,19 @@ public class EditorController {
     }
 
     public void findText(String what) {
-        System.out.println("Editor controller: " + what);
+        int from = textManipulator.findText(what, textArea.getText(), this.lastFindIndex);
+        if (from != -1) {
+            lastFindIndex = from + what.length();
+            textArea.requestFocus();
+            textArea.selectRange(from, from + what.length());
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Not found");
+            alert.setHeaderText("Text not found");
+            alert.showAndWait();
+        }
+
     }
+    
+    
 }

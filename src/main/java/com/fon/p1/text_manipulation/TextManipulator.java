@@ -11,19 +11,13 @@ package com.fon.p1.text_manipulation;
  */
 public class TextManipulator {
 
-    /**
-     * Wanted verilen text içerisinde aranır. -1 bulunamadığında
-     *
-     * @param wanted
-     * @return
-     */
+    private TextSearchManager textSearchManager = new TextSearchManager();
+
     public int findText(String wanted, String textArea, int from) {
-        return TextSearh.find(wanted, textArea, from);
+        return textSearchManager.find(wanted, textArea, from);
     }
 
     public void replaceText(String current, String newText, String textArea){
         textArea.replace(current, newText);
     }
-    
-    
 }
