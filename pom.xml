@@ -26,7 +26,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <mainClass>com.fon.p1.App</mainClass>
+                    <mainClass>com.fon.p1.application.App</mainClass>
                 </configuration>
                 <executions>
                     <execution>

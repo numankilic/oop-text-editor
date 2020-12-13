@@ -1,4 +1,4 @@
-package com.fon.p1;
+package com.fon.p1.application;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,7 +10,6 @@ import java.io.IOException;
 
 /**
  * JavaFX App 
- * Authors Oytun Fatih Numan
  */
 public class App extends Application {
 
