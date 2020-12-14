@@ -1,4 +1,5 @@
 com\fon\p1\application\FindPopupController.class
+com\fon\p1\text_manipulation\TextManipulator.class
 com\fon\p1\application\IFindTextFunction.class
 com\fon\p1\text_manipulation\WordListManager.class
 com\fon\p1\application\EditorController.class
