@@ -196,5 +196,12 @@ public class EditorController {
         lastSearched = what;
 
     }
+    
+    public void check(){
+        String textContent = textArea.getText();
+        String writtenString = textContent.substring(textContent.length() - 1);
+        System.out.println(textContent.substring(textContent.length() - 1));
+        textManipulator.toUndoRedo(writtenString);
+    }
 
 }
