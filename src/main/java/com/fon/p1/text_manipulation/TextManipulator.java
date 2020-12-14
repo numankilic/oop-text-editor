@@ -16,6 +16,7 @@ public class TextManipulator {
 
     public int findText(String wanted, String textArea, int from) {
         return textSearchManager.find(wanted, textArea, from);
+
     }
 
     public void replaceText(String current, String newText, String textArea){
