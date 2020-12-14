@@ -32,10 +32,10 @@ public class FindPopupController implements Initializable {
     private Button searchButton;
 
     private IFindTextFunction findFunction;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+     
     }
 
     public void onSearchBoxTextChanged() {

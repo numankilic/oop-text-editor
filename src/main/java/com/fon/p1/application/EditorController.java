@@ -50,6 +50,10 @@ public class EditorController {
     private TextManipulator textManipulator = new TextManipulator();
 
     private int lastFindIndex = 0;
+    private String lastSearched = "";
+
+    // Aramayı baştan sona doğru yapacaksa true aksi halde false.
+    private boolean isFindingDown = true;
 
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
@@ -57,7 +61,6 @@ public class EditorController {
 
     public void initialize() {
         textArea.setWrapText(true);
-
     }
 
     public void openFile() {
@@ -173,18 +176,25 @@ public class EditorController {
 
     public void findText(String what) {
         int from = textManipulator.findText(what, textArea.getText(), this.lastFindIndex);
+        if(from == -1 && this.lastFindIndex != 0 || !this.lastSearched.equals(what)){
+            from = textManipulator.findText(what, textArea.getText(), 0);
+        }
+
         if (from != -1) {
+
             lastFindIndex = from + what.length();
+
             textArea.requestFocus();
-            textArea.selectRange(from, from + what.length());
+            textArea.selectRange(from, this.lastFindIndex);
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Not found");
             alert.setHeaderText("Text not found");
             alert.showAndWait();
         }
+        
+        lastSearched = what;
 
     }
-    
-    
+
 }
