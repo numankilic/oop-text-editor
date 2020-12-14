@@ -11,10 +11,8 @@ package com.fon.p1.text_manipulation;
  */
 public class TextManipulator {
 
-    private TextSearchManager textSearchManager = new TextSearchManager();
-
-    public int findText(String wanted, String textArea, int from) {
-        return textSearchManager.find(wanted, textArea, from);
+    public int findText(String wanted, String textArea, int from){
+        return textArea.indexOf(wanted, from);
     }
 
     public void replaceText(String current, String newText, String textArea){
