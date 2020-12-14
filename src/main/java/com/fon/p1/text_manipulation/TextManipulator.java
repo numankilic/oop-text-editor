@@ -11,11 +11,10 @@ package com.fon.p1.text_manipulation;
  */
 public class TextManipulator {
 
-    private TextSearchManager textSearchManager = new TextSearchManager();
-    private undoRedo undoRedo = new undoRedo();
+    private UndoRedo undoRedo = new UndoRedo();
 
     public int findText(String wanted, String textArea, int from) {
-        return textSearchManager.find(wanted, textArea, from);
+        return textArea.indexOf(wanted, from);
 
     }
 

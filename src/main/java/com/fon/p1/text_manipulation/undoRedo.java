@@ -4,12 +4,12 @@ import java.util.Stack;
 
 
 
-public class undoRedo {
+public class UndoRedo {
     
     Stack<String> undoStack = new Stack<>();
     Stack<String> redoStack = new Stack<>();
     
-    public undoRedo() {
+    public UndoRedo() {
         
     }
     
