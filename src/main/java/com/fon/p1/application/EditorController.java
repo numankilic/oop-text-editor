@@ -174,9 +174,30 @@ public class EditorController {
         }
     }
 
+    public void onReplaceButtonClick() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("replace_popup.fxml"));
+            Parent root = (Parent) fxmlLoader.load();
+            ReplacePopupController rpController = fxmlLoader.getController();
+
+            rpController.saveFindTextFunction((str) -> this.findText(str));
+            rpController.saveReplaceFunction((current, replace) -> this.replaceText(current, replace));
+            rpController.saveReplaceAllFunction((current, replace) -> this.replaceAllText(current, replace));
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setTitle("Replace");
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public void findText(String what) {
         int from = textManipulator.findText(what, textArea.getText(), this.lastFindIndex);
-        if(from == -1 && this.lastFindIndex != 0 || !this.lastSearched.equals(what)){
+        if (from == -1 && this.lastFindIndex != 0 || !this.lastSearched.equals(what)) {
             from = textManipulator.findText(what, textArea.getText(), 0);
         }
 
@@ -192,12 +213,47 @@ public class EditorController {
             alert.setHeaderText("Text not found");
             alert.showAndWait();
         }
-        
+
         lastSearched = what;
 
     }
-    
-    public void check(){
+
+    public void replaceText(String current, String replace) {
+        int start, stop;
+        start = textManipulator.findText(current, textArea.getText(), 0);
+
+        if (start == -1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Not found");
+            alert.setHeaderText("Text not found");
+            alert.showAndWait();
+        } else {
+            stop = start + current.length();
+            textArea.replaceText(start, stop, replace);
+        }
+        
+
+    }
+
+    public void replaceAllText(String current, String replace) {
+        int start, stop;
+        start = textManipulator.findText(current, textArea.getText(), 0);
+
+        if (start == -1) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Not found");
+            alert.setHeaderText("Text not found");
+            alert.showAndWait();
+        }
+        while (start != -1) {
+            stop = start + current.length();
+            textArea.replaceText(start, stop, replace);
+            start = textManipulator.findText(current, textArea.getText(), 0);
+
+        }
+    }
+
+    public void check() {
         String textContent = textArea.getText();
         String writtenString = textContent.substring(textContent.length() - 1);
         System.out.println(textContent.substring(textContent.length() - 1));

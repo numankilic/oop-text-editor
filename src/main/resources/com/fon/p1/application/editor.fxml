@@ -28,6 +28,7 @@
                         <MenuItem mnemonicParsing="false" text="Redo" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#onFindTextButtonClick" text="Find" />
+                        <MenuItem mnemonicParsing="false" onAction="#onReplaceButtonClick" text="Replace" />                        
                     </items>
                 </Menu>
                 <!--        <Menu mnemonicParsing="false" text="Edit">
