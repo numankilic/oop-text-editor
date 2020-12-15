@@ -22,10 +22,23 @@ public class UndoRedo {
     public void toStack(String writtenChar){
         //System.out.println("Stack'e atilan char: " + writtenChar);
         undoStack.push(writtenChar);
-        for (int i = 0; i < undoStack.size();i++){
-            String ele = undoStack.pop();
+//        for (int i = 0; i < undoStack.size();i++){
+//            String ele = undoStack.pop();
             //System.out.println("Stackten cikan char: " + ele);
         }
+    
+    public String popStack(){
+        if(undoStack.empty()){
+            return "";
+        }
+        String deletedText = undoStack.pop();
+        redoStack.push(deletedText);
+
+        return redoStack.pop();
+        }
+    
     }
     
-}
+
+    
+
