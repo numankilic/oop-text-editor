@@ -1,7 +1,9 @@
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\text_manipulation\WordListManager.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\text_manipulation\UndoRedo.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\text_manipulation\TextManipulator.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\application\FindPopupController.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\application\EditorController.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\application\App.java
-C:\Users\pepper\Documents\NetBeansProjects\p1\src\main\java\com\fon\p1\application\IFindTextFunction.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\FindPopupController.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\text_manipulation\WordListManager.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\App.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\EditorController.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\text_manipulation\UndoRedo.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\ReplacePopupController.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\IReplaceTextFunction.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\text_manipulation\TextManipulator.java
+C:\Users\gizli\Documents\NetBeansProjects\nesne-proje-1\src\main\java\com\fon\p1\application\IFindTextFunction.java
