@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -44,6 +45,12 @@ public class EditorController {
 
     @FXML
     private TextArea textArea;
+    
+    @FXML 
+    private MenuItem undoButton;
+    
+    @FXML 
+    private MenuItem redoButton;
 
     private String filePath = "";
 
@@ -253,11 +260,33 @@ public class EditorController {
         }
     }
 
-    public void check() {
+  
+    public void undo(){
+//        textArea.undo(); ???????????????
         String textContent = textArea.getText();
+        if (textContent.equals("")){
+           undoButton.setDisable(true);
+        }
         String writtenString = textContent.substring(textContent.length() - 1);
-        System.out.println(textContent.substring(textContent.length() - 1));
+//        System.out.println("Stack'e atılan text" + textContent.substring(textContent.length() - 1));
         textManipulator.toUndoRedo(writtenString);
+        textArea.deleteText(textContent.length() - 1, textContent.length());
+    }
+    
+    public void redo(){
+//        textArea.redo();????????????
+    
+        String deletedString = textManipulator.bringText();
+        if(deletedString.equals("")){
+//            redoButton.setDisable(true);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Redo");
+            alert.setHeaderText("Nothing to redo");
+            alert.showAndWait();
+        }
+        else{
+            textArea.appendText(deletedString);
+        }
     }
 
 }

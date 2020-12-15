@@ -25,4 +25,8 @@ public class TextManipulator {
     public void toUndoRedo(String writtenString){
         undoRedo.toStack(writtenString);
     }
+    
+    public String bringText(){
+        return undoRedo.popStack();
+    }
 }
