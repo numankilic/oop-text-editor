@@ -24,8 +24,8 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#undo" text="Undo"  fx:id="undoButton" />
-                        <MenuItem mnemonicParsing="false" onAction="#redo" text="Redo" fx:id="redoButton"/>
+                        <MenuItem fx:id="undoButton" mnemonicParsing="false" onAction="#undo" text="Undo" />
+                        <MenuItem fx:id="redoButton" mnemonicParsing="false" onAction="#redo" text="Redo" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#onFindTextButtonClick" text="Find" />
                         <MenuItem mnemonicParsing="false" onAction="#onReplaceButtonClick" text="Replace" />                        
@@ -49,7 +49,7 @@
         </MenuBar>
         <AnchorPane fx:id="editorAnchor" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
             <children>
-                <TextArea fx:id="textArea" layoutX="-3.0" prefHeight="375.0" prefWidth="603.0" style="-fx-min-height: 100; -fx-min-width: 100;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <TextArea fx:id="textArea" layoutX="-3.0" onKeyPressed="#getPressedKeyIndex" prefHeight="375.0" prefWidth="603.0" style="-fx-min-height: 100; -fx-min-width: 100;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
         </AnchorPane>
     </children>
