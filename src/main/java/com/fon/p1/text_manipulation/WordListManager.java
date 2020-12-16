@@ -14,10 +14,10 @@ import java.util.Scanner;
  *
  * @author pepper
  */
-public class WordListManager{
-    
+public class WordListManager {
+
     private ArrayList<String> strList = new ArrayList<String>();
-  
+
     public WordListManager() throws FileNotFoundException {
         this.init();
     }
@@ -40,12 +40,53 @@ public class WordListManager{
         myReader.close();
     }
 
+    // Binary search ile wordlist üzerinde arama yapar.
+    public int find(String word) {
+        // word > strList[i] listenin sağına bak
+        // word < strList[i] listenin soluna bak
+        // word == strList[i] i değerini döndür
+
+        int left = 0;
+        int right = strList.size() - 1;
+        
+        while (left <= right) {
+            int middle = left + (right - left) / 2;
+            
+            if (word.compareToIgnoreCase(strList.get(middle)) == 0) {
+                return middle;
+            }else if(word.compareToIgnoreCase(strList.get(middle)) > 0) {
+                left = middle + 1;
+            }else{
+                right = middle - 1;
+            }
+        }
+        
+        return -1;
+    }
+
     public boolean isValid(String word) {
+        int resFind = this.find(word);
+        if(resFind != -1){
+            return true;
+        }
+        
         return false;
     }
 
     public String getTrueForm(String word) {
-        String c = "";
-        return c;
+        String result = "";
+        for(int i = 0; i < strList.size(); i++){
+            if(word.length() != strList.get(i).length()){
+                continue;
+            }
+            
+            
+        }
+        
+        return result;
+    }
+
+    public ArrayList<String> getStrList() {
+        return strList;
     }
 }
