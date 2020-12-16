@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Stack;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -61,7 +62,12 @@ public class EditorController {
 
     // Aramayı baştan sona doğru yapacaksa true aksi halde false.
     private boolean isFindingDown = true;
+    
+    private int pressedKeyIndex;
 
+    Stack<Integer> pressedKeyStackForUndo = new Stack<>();
+    Stack<Integer> pressedKeyStackForRedo = new Stack<>();
+    
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
     }
@@ -259,23 +265,24 @@ public class EditorController {
 
         }
     }
-
+    public void getPressedKeyIndex(){
+        pressedKeyIndex = textArea.getCaretPosition();
+        pressedKeyStackForUndo.push(pressedKeyIndex);
+    }
   
     public void undo(){
-//        textArea.undo(); ???????????????
         String textContent = textArea.getText();
         if (textContent.equals("")){
            undoButton.setDisable(true);
         }
-        String writtenString = textContent.substring(textContent.length() - 1);
-//        System.out.println("Stack'e atılan text" + textContent.substring(textContent.length() - 1));
-        textManipulator.toUndoRedo(writtenString);
-        textArea.deleteText(textContent.length() - 1, textContent.length());
+        int lastPressedKeyIndex = pressedKeyStackForUndo.pop();
+        textManipulator.toUndoRedo(textContent.substring(lastPressedKeyIndex, lastPressedKeyIndex+1));
+        pressedKeyStackForRedo.push(lastPressedKeyIndex);
+        textArea.deleteText(lastPressedKeyIndex, lastPressedKeyIndex+1);
     }
     
     public void redo(){
-//        textArea.redo();????????????
-    
+        
         String deletedString = textManipulator.bringText();
         if(deletedString.equals("")){
 //            redoButton.setDisable(true);
@@ -285,7 +292,9 @@ public class EditorController {
             alert.showAndWait();
         }
         else{
-            textArea.appendText(deletedString);
+            int lastPressedKeyIndex = pressedKeyStackForRedo.pop();
+            pressedKeyStackForUndo.push(lastPressedKeyIndex);
+            textArea.insertText(lastPressedKeyIndex, deletedString);
         }
     }
 
