@@ -113,7 +113,7 @@ public class EditorController {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     sb.append(line + "\n");
-                    textArea.setText(sb.toString());
+                    textArea.replaceText(sb.toString());
                 }
                 reader.close();
             } catch (Exception e) {
@@ -174,7 +174,7 @@ public class EditorController {
     }
 
     public void newFile() {
-        textArea.setText("");
+        textArea.replaceText("");
     }
 
     public void onFindTextButtonClick() {
@@ -265,7 +265,7 @@ public class EditorController {
         }
 
     }
-
+    
     private void validateSubStr(int leftIndex, int rightIndex) {
         String subStr = textArea.getText().substring(leftIndex, rightIndex);
 
@@ -275,9 +275,9 @@ public class EditorController {
             String validWord = this.getValidWord(subStr);
             if (!subStr.equals(validWord)) {
                 System.out.println(textArea.getText());
-                textArea.replaceText(textArea.getText().replace(subStr, validWord));
+                textArea.replaceText(leftIndex, rightIndex, validWord);
                 System.out.println(textArea.getText());
-                //textArea.setStyle(leftIndex, rightIndex, "-fx-fill: #e58e26;");
+                textArea.setStyle(leftIndex, rightIndex, "-fx-fill: #e58e26;");
             } else {
                 textArea.setStyle(leftIndex, rightIndex, "-fx-fill: red;");
             }
@@ -286,7 +286,6 @@ public class EditorController {
         }
 
         textArea.setStyle(Math.min(rightIndex, textArea.getText().length() - 1), textArea.getText().length() - 1, "-fx-fill: black;");
-        System.out.println("__________________");
     }
 
     private String getValidWord(String word) {
