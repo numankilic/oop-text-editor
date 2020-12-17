@@ -8,6 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,6 +27,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
+import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.StyledTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -45,35 +48,45 @@ public class EditorController {
     private AnchorPane editorAnchor;
 
     @FXML
-    private TextArea textArea;
-    
-    @FXML 
+    private InlineCssTextArea textArea;
+
+    @FXML
     private MenuItem undoButton;
-    
-    @FXML 
+
+    @FXML
     private MenuItem redoButton;
 
     private String filePath = "";
 
-    private TextManipulator textManipulator = new TextManipulator();
+    private TextManipulator textManipulator;
 
     private int lastFindIndex = 0;
     private String lastSearched = "";
 
     // Aramayı baştan sona doğru yapacaksa true aksi halde false.
     private boolean isFindingDown = true;
-    
+
     private int pressedKeyIndex;
 
     Stack<Integer> pressedKeyStackForUndo = new Stack<>();
     Stack<Integer> pressedKeyStackForRedo = new Stack<>();
-    
+
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
     }
 
     public void initialize() {
         textArea.setWrapText(true);
+        textArea.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
+        try {
+            this.textManipulator = new TextManipulator();
+        } catch (FileNotFoundException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("File not found!");
+            alert.setContentText("Error while opening word list!");
+            alert.showAndWait();
+        }
     }
 
     public void openFile() {
@@ -208,6 +221,82 @@ public class EditorController {
         }
     }
 
+    public void onSingleTranspositionButtonClick() {
+
+        int left = 0;
+        int right = 0;
+        String currentText = textArea.getText();
+        while (left < currentText.length()) {
+            if (currentText.length() <= right || currentText.length() <= left) {
+                if (left != right) {
+                    this.validateSubStr(left, right);
+                    left = right + 1;
+                }
+                continue;
+            }
+            char currentChar = currentText.charAt(right);
+            if (!Character.isLetter(currentChar)) {
+
+                if (Character.isDigit(currentChar)) {
+                    while (!Character.isAlphabetic(currentChar)) {
+                        right++;
+                        if (currentText.length() <= right) {
+                            break;
+                        }
+                        currentChar = currentText.charAt(right);
+                    }
+                    left = right;
+                    continue;
+                } else {
+                    // değer tire ise devam et
+                    if (currentChar == '-') {
+                        right++;
+                        continue;
+                    }
+                    // tire veya sayı değerinin olmadığı aynı zamanda alfabetik 
+                    // olmadığı durumda kelime olarak ele alıyoruz.
+                    this.validateSubStr(left, right);
+                    right++;
+                    left = right;
+                }
+            } else {
+                right++;
+            }
+        }
+
+    }
+
+    private void validateSubStr(int leftIndex, int rightIndex) {
+        String subStr = textArea.getText().substring(leftIndex, rightIndex);
+
+        boolean isSubStrValid = this.isWordValid(subStr);
+
+        if (!isSubStrValid) {
+            String validWord = this.getValidWord(subStr);
+            if (!subStr.equals(validWord)) {
+                System.out.println(textArea.getText());
+                textArea.replaceText(textArea.getText().replace(subStr, validWord));
+                System.out.println(textArea.getText());
+                //textArea.setStyle(leftIndex, rightIndex, "-fx-fill: #e58e26;");
+            } else {
+                textArea.setStyle(leftIndex, rightIndex, "-fx-fill: red;");
+            }
+        } else {
+            textArea.setStyle(leftIndex, rightIndex, "-fx-fill: green;");
+        }
+
+        textArea.setStyle(Math.min(rightIndex, textArea.getText().length() - 1), textArea.getText().length() - 1, "-fx-fill: black;");
+        System.out.println("__________________");
+    }
+
+    private String getValidWord(String word) {
+        return this.textManipulator.getValidForm(word);
+    }
+
+    public boolean isWordValid(String word) {
+        return this.textManipulator.isValidWord(word);
+    }
+
     public void findText(String what) {
         int from = textManipulator.findText(what, textArea.getText(), this.lastFindIndex);
         if (from == -1 && this.lastFindIndex != 0 || !this.lastSearched.equals(what)) {
@@ -244,7 +333,6 @@ public class EditorController {
             stop = start + current.length();
             textArea.replaceText(start, stop, replace);
         }
-        
 
     }
 
@@ -265,33 +353,33 @@ public class EditorController {
 
         }
     }
-    public void getPressedKeyIndex(){
+
+    public void getPressedKeyIndex() {
         pressedKeyIndex = textArea.getCaretPosition();
         pressedKeyStackForUndo.push(pressedKeyIndex);
     }
-  
-    public void undo(){
+
+    public void undo() {
         String textContent = textArea.getText();
-        if (textContent.equals("")){
-           undoButton.setDisable(true);
+        if (textContent.equals("")) {
+            undoButton.setDisable(true);
         }
         int lastPressedKeyIndex = pressedKeyStackForUndo.pop();
-        textManipulator.toUndoRedo(textContent.substring(lastPressedKeyIndex, lastPressedKeyIndex+1));
+        textManipulator.toUndoRedo(textContent.substring(lastPressedKeyIndex, lastPressedKeyIndex + 1));
         pressedKeyStackForRedo.push(lastPressedKeyIndex);
-        textArea.deleteText(lastPressedKeyIndex, lastPressedKeyIndex+1);
+        textArea.deleteText(lastPressedKeyIndex, lastPressedKeyIndex + 1);
     }
-    
-    public void redo(){
-        
+
+    public void redo() {
+
         String deletedString = textManipulator.bringText();
-        if(deletedString.equals("")){
+        if (deletedString.equals("")) {
 //            redoButton.setDisable(true);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Redo");
             alert.setHeaderText("Nothing to redo");
             alert.showAndWait();
-        }
-        else{
+        } else {
             int lastPressedKeyIndex = pressedKeyStackForRedo.pop();
             pressedKeyStackForUndo.push(lastPressedKeyIndex);
             textArea.insertText(lastPressedKeyIndex, deletedString);
