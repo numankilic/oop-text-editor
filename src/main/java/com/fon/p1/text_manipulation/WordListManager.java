@@ -119,7 +119,6 @@ public class WordListManager {
             if (count != 2) {
                 return word;
             } else {
-                 System.out.println(word + "::" + lookFor +"::"+ Arrays.toString(diff));
                 return lookFor;
             }
         }

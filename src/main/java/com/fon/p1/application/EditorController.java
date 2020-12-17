@@ -66,6 +66,9 @@ public class EditorController {
     // Aramayı baştan sona doğru yapacaksa true aksi halde false.
     private boolean isFindingDown = true;
 
+    // 
+    private String textAreaDefaultStyle = "-fx-font-size: 18px; -fx-padding: 10px; -fx-fill: #000000;";
+
     private int pressedKeyIndex;
 
     Stack<Integer> pressedKeyStackForUndo = new Stack<>();
@@ -77,7 +80,7 @@ public class EditorController {
 
     public void initialize() {
         textArea.setWrapText(true);
-        textArea.setStyle("-fx-font-size: 18px; -fx-padding: 10px;");
+        textArea.setStyle(this.textAreaDefaultStyle);
         try {
             this.textManipulator = new TextManipulator();
         } catch (FileNotFoundException e) {
@@ -263,9 +266,8 @@ public class EditorController {
                 right++;
             }
         }
-
     }
-    
+
     private void validateSubStr(int leftIndex, int rightIndex) {
         String subStr = textArea.getText().substring(leftIndex, rightIndex);
 
@@ -274,9 +276,7 @@ public class EditorController {
         if (!isSubStrValid) {
             String validWord = this.getValidWord(subStr);
             if (!subStr.equals(validWord)) {
-                System.out.println(textArea.getText());
                 textArea.replaceText(leftIndex, rightIndex, validWord);
-                System.out.println(textArea.getText());
                 textArea.setStyle(leftIndex, rightIndex, "-fx-fill: #e58e26;");
             } else {
                 textArea.setStyle(leftIndex, rightIndex, "-fx-fill: red;");
@@ -284,16 +284,18 @@ public class EditorController {
         } else {
             textArea.setStyle(leftIndex, rightIndex, "-fx-fill: green;");
         }
-
-        textArea.setStyle(Math.min(rightIndex, textArea.getText().length() - 1), textArea.getText().length() - 1, "-fx-fill: black;");
+        if (rightIndex >= textArea.getText().length() - 1) {
+            textArea.appendText(" ");
+        }
+        textArea.setStyle(Math.min(rightIndex, textArea.getText().length() - 1), textArea.getText().length(), "-fx-fill: black;");
     }
 
     private String getValidWord(String word) {
-        return this.textManipulator.getValidForm(word);
+        return this.textManipulator.getValidForm(word.toLowerCase());
     }
 
     public boolean isWordValid(String word) {
-        return this.textManipulator.isValidWord(word);
+        return this.textManipulator.isValidWord(word.toLowerCase());
     }
 
     public void findText(String what) {
@@ -354,6 +356,7 @@ public class EditorController {
     }
 
     public void getPressedKeyIndex() {
+        textArea.clearStyle(0, textArea.getText().length());
         pressedKeyIndex = textArea.getCaretPosition();
         pressedKeyStackForUndo.push(pressedKeyIndex);
     }
