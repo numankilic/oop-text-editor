@@ -41,6 +41,13 @@ public class UndoRedo {
         }
         return null;
     }
+    
+    public void resetUndo() {
+        if (!undoStack.isEmpty()) {
+            undoStack.clear();
+        }
+    }
+    
 
     public void resetRedo() {
         if (!redoStack.isEmpty()) {

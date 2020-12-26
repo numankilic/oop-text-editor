@@ -133,6 +133,8 @@ public class EditorController implements Initializable {
             }
 
         }
+        textManipulator.resetUndoStack();
+        textManipulator.resetRedoStack();
 
     }
 
