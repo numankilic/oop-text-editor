@@ -16,7 +16,7 @@ public class TextManipulator {
     private UndoRedo undoRedo = new UndoRedo();
     private WordListManager WLManager;
 
-    public TextManipulator() throws FileNotFoundException{
+    public TextManipulator() throws FileNotFoundException {
         this.WLManager = new WordListManager();
     }
 
@@ -29,20 +29,32 @@ public class TextManipulator {
         textArea.replace(current, newText);
     }
 
-    public void toUndoRedo(String writtenString) {
-        undoRedo.toStack(writtenString);
+    public void pushUndoStack(String text) {
+        undoRedo.pushToUndo(text);
     }
 
-    public String bringText() {
-        return undoRedo.popStack();
+    public String undo() {
+        return undoRedo.popFromUndo();
     }
-    
-    public boolean isValidWord(String word){
+
+    public void pushRedoStack(String kpa) {
+        undoRedo.pushToRedo(kpa);
+    }
+
+    public void resetRedoStack() {
+        undoRedo.resetRedo();
+    }
+
+    public String redo() {
+        return undoRedo.popFromRedo();
+    }
+
+    public boolean isValidWord(String word) {
         return this.WLManager.isValid(word);
     }
-    
-    public String getValidForm(String word){
+
+    public String getValidForm(String word) {
         return this.WLManager.getTrueFormForSingleTransposition(word);
     }
-    
+
 }

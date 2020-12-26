@@ -5,40 +5,47 @@
  */
 package com.fon.p1.text_manipulation;
 
-import java.util.Stack;
-
 /**
  *
  * @author Numan
  */
 public class UndoRedo {
-    Stack<String> undoStack = new Stack<>();
-    Stack<String> redoStack = new Stack<>();
-    
+
+    public final int stackSize = 5;
+    private SizedStack<String> undoStack;
+    private SizedStack<String> redoStack;
+
     public UndoRedo() {
-        
+        this.undoStack = new SizedStack<>(stackSize);
+        this.redoStack = new SizedStack<>(stackSize);
     }
-    
-    public void toStack(String writtenChar){
-        //System.out.println("Stack'e atilan char: " + writtenChar);
-        undoStack.push(writtenChar);
-//        for (int i = 0; i < undoStack.size();i++){
-//            String ele = undoStack.pop();
-            //System.out.println("Stackten cikan char: " + ele);
-        }
-    
-    public String popStack(){
-        if(undoStack.empty()){
-            return "";
-        }
-        String deletedText = undoStack.pop();
-        redoStack.push(deletedText);
 
-        return redoStack.pop();
-        }
-    
+    public void pushToUndo(String text) {
+        undoStack.push(text);
     }
-    
 
-    
+    public void pushToRedo(String text) {
+        redoStack.push(text);
+    }
 
+    public String popFromUndo() {
+        if (!undoStack.isEmpty()) {
+            return undoStack.pop();
+        }
+        return null;
+    }
+
+    public String popFromRedo() {
+        if (!redoStack.isEmpty()) {
+            return redoStack.pop();
+        }
+        return null;
+    }
+
+    public void resetRedo() {
+        if (!redoStack.isEmpty()) {
+            redoStack.clear();
+        }
+    }
+
+}

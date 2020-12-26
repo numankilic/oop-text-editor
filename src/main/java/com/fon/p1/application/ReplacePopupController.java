@@ -37,9 +37,7 @@ public class ReplacePopupController implements Initializable{
     private IReplaceTextFunction replaceAllFunction;
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-     
-    }
+    public void initialize(URL url, ResourceBundle rb) {}
 
     public void onSearchBoxTextChanged() {
         if (!searchBox.getText().equals("")) {
@@ -72,6 +70,4 @@ public class ReplacePopupController implements Initializable{
     public void saveReplaceAllFunction(IReplaceTextFunction replaceAllTextFunction){
         this.replaceAllFunction = replaceAllTextFunction;
     }
-    
-    
 }

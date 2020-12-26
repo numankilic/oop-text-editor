@@ -1,10 +1,8 @@
 package com.fon.p1.application;
 
 import com.fon.p1.text_manipulation.TextManipulator;
-import java.awt.FileDialog;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
@@ -12,23 +10,20 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Stack;
-import javafx.application.Platform;
+import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
-import javafx.stage.StageStyle;
 import org.fxmisc.richtext.InlineCssTextArea;
-import org.fxmisc.richtext.StyledTextArea;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -39,7 +34,7 @@ import org.fxmisc.richtext.StyledTextArea;
  *
  * @author pepper
  */
-public class EditorController {
+public class EditorController implements Initializable {
 
     @FXML
     private Stage controllerStage;
@@ -66,30 +61,40 @@ public class EditorController {
     // Aramayı baştan sona doğru yapacaksa true aksi halde false.
     private boolean isFindingDown = true;
 
-    // 
+    // Varsayılan textArea stili
     private String textAreaDefaultStyle = "-fx-font-size: 18px; -fx-padding: 10px; -fx-fill: #000000;";
 
     private int pressedKeyIndex;
 
-    Stack<Integer> pressedKeyStackForUndo = new Stack<>();
-    Stack<Integer> pressedKeyStackForRedo = new Stack<>();
+    private boolean isUndoRedo = false;
 
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
     }
 
-    public void initialize() {
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
         textArea.setWrapText(true);
         textArea.setStyle(this.textAreaDefaultStyle);
         try {
             this.textManipulator = new TextManipulator();
         } catch (FileNotFoundException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("File not found!");
-            alert.setContentText("Error while opening word list!");
-            alert.showAndWait();
+            showError("File not found!", "", "Error while opening word list!");
         }
+
+        // text area üzerinde bir değişiklik olduğunda undo-redo işlemlerini ele 
+        // alabilmek için textin önceki versiyonunu kayıt altına alır.
+        textArea.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String oldText, String newText) {
+                if (isUndoRedo) {
+                    isUndoRedo = false;
+                } else {
+                    textManipulator.pushUndoStack(oldText);
+                    textManipulator.resetRedoStack();
+                }
+            }
+        });
     }
 
     public void openFile() {
@@ -305,16 +310,11 @@ public class EditorController {
         }
 
         if (from != -1) {
-
             lastFindIndex = from + what.length();
-
             textArea.requestFocus();
             textArea.selectRange(from, this.lastFindIndex);
         } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Not found");
-            alert.setHeaderText("Text not found");
-            alert.showAndWait();
+            showInfo("Not Found", "", "Text not found");
         }
 
         lastSearched = what;
@@ -326,10 +326,7 @@ public class EditorController {
         start = textManipulator.findText(current, textArea.getText(), 0);
 
         if (start == -1) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Not found");
-            alert.setHeaderText("Text not found");
-            alert.showAndWait();
+            showInfo("Not Found", "", "Text not found");
         } else {
             stop = start + current.length();
             textArea.replaceText(start, stop, replace);
@@ -338,54 +335,54 @@ public class EditorController {
     }
 
     public void replaceAllText(String current, String replace) {
-        int start, stop;
-        start = textManipulator.findText(current, textArea.getText(), 0);
-
+        int start = textManipulator.findText(current, textArea.getText(), 0);
         if (start == -1) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Not found");
-            alert.setHeaderText("Text not found");
-            alert.showAndWait();
+            showInfo("Not Found", "", "Text not found");
         }
-        while (start != -1) {
-            stop = start + current.length();
-            textArea.replaceText(start, stop, replace);
-            start = textManipulator.findText(current, textArea.getText(), 0);
-
-        }
-    }
-
-    public void getPressedKeyIndex() {
-        textArea.clearStyle(0, textArea.getText().length());
-        pressedKeyIndex = textArea.getCaretPosition();
-        pressedKeyStackForUndo.push(pressedKeyIndex);
+        String currentText = textArea.getText();
+        currentText = currentText.replaceAll(current, replace);
+        textArea.replaceText(currentText);
     }
 
     public void undo() {
-        String textContent = textArea.getText();
-        if (textContent.equals("")) {
-            undoButton.setDisable(true);
+        this.isUndoRedo = true;
+        String undoText = textManipulator.undo();
+        if (undoText == null) {
+            this.showInfo("Null Stack", "", "Nothing to undo in stack.");
+            return;
         }
-        int lastPressedKeyIndex = pressedKeyStackForUndo.pop();
-        textManipulator.toUndoRedo(textContent.substring(lastPressedKeyIndex, lastPressedKeyIndex + 1));
-        pressedKeyStackForRedo.push(lastPressedKeyIndex);
-        textArea.deleteText(lastPressedKeyIndex, lastPressedKeyIndex + 1);
+        textManipulator.pushRedoStack(textArea.getText());
+        textArea.replaceText(undoText);
+
     }
 
     public void redo() {
+        System.out.println("redo");
 
-        String deletedString = textManipulator.bringText();
-        if (deletedString.equals("")) {
-//            redoButton.setDisable(true);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Redo");
-            alert.setHeaderText("Nothing to redo");
-            alert.showAndWait();
-        } else {
-            int lastPressedKeyIndex = pressedKeyStackForRedo.pop();
-            pressedKeyStackForUndo.push(lastPressedKeyIndex);
-            textArea.insertText(lastPressedKeyIndex, deletedString);
+        this.isUndoRedo = true;
+        String redoText = textManipulator.redo();
+        if (redoText == null) {
+            this.showInfo("Null Stack", "", "Nothing to redo in stack.");
+            return;
         }
+        textManipulator.pushUndoStack(textArea.getText());
+        textArea.replaceText(redoText);
+    }
+
+    public void showInfo(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    public void showError(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
 }
