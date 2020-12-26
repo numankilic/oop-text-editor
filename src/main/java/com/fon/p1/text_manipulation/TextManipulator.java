@@ -40,6 +40,10 @@ public class TextManipulator {
     public void pushRedoStack(String kpa) {
         undoRedo.pushToRedo(kpa);
     }
+    
+    public void resetUndoStack() {
+        undoRedo.resetUndo();
+    }
 
     public void resetRedoStack() {
         undoRedo.resetRedo();
