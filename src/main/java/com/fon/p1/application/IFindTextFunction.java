@@ -10,5 +10,6 @@ package com.fon.p1.application;
  * @author pepper
  */
 public interface IFindTextFunction {
+
     public void operation(String find);
 }

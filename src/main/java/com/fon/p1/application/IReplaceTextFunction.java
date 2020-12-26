@@ -10,7 +10,6 @@ package com.fon.p1.application;
  * @author Numan
  */
 public interface IReplaceTextFunction {
-    
+
     public void operation(String current, String replace);
-    
 }

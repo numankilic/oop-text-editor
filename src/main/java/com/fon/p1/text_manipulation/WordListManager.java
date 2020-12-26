@@ -8,7 +8,6 @@ package com.fon.p1.text_manipulation;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**

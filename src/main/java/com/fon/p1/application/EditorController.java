@@ -67,6 +67,7 @@ public class EditorController implements Initializable {
     private int pressedKeyIndex;
 
     private boolean isUndoRedo = false;
+    private boolean shouldResetStyle = false;
 
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
@@ -92,6 +93,11 @@ public class EditorController implements Initializable {
                 } else {
                     textManipulator.pushUndoStack(oldText);
                     textManipulator.resetRedoStack();
+                }
+                
+                if(shouldResetStyle){
+                    textArea.setStyle(0, textArea.getText().length(), textAreaDefaultStyle);
+                    shouldResetStyle = false;
                 }
             }
         });
@@ -164,27 +170,30 @@ public class EditorController implements Initializable {
         fileChooser.getExtensionFilters().addAll(new ExtensionFilter("TEXT files (*.txt)", "*.txt"));
 
         File textFile = fileChooser.showSaveDialog(controllerStage);
-
-        this.filePath = textFile.getAbsolutePath();
-        this.updateTitle(textFile.getName());
-
-        try {
-            FileWriter writer = new FileWriter(textFile);
-            writer.write(textArea.getText());
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("File not found");
+        if (textFile != null) {
+            this.filePath = textFile.getAbsolutePath();
+            this.updateTitle(textFile.getName());
+            try {
+                FileWriter writer = new FileWriter(textFile);
+                writer.write(textArea.getText());
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("File not found");
+            }
         }
+
     }
 
     public void closeFile() {
-        this.filePath = "";
-        this.updateTitle("*");
         this.newFile();
     }
 
     public void newFile() {
+        filePath = "";
+        this.updateTitle("*New");
         textArea.replaceText("");
+        textManipulator.resetUndoStack();
+        textManipulator.resetRedoStack();
     }
 
     public void onFindTextButtonClick() {
@@ -273,6 +282,7 @@ public class EditorController implements Initializable {
                 right++;
             }
         }
+        shouldResetStyle = true;
     }
 
     private void validateSubStr(int leftIndex, int rightIndex) {
@@ -291,10 +301,10 @@ public class EditorController implements Initializable {
         } else {
             textArea.setStyle(leftIndex, rightIndex, "-fx-fill: green;");
         }
-        if (rightIndex >= textArea.getText().length() - 1) {
-            textArea.appendText(" ");
-        }
-        textArea.setStyle(Math.min(rightIndex, textArea.getText().length() - 1), textArea.getText().length(), "-fx-fill: black;");
+//        if (rightIndex >= textArea.getText().length() - 1) {
+//            textArea.appendText(" ");
+//        }
+        textArea.setStyle(Math.min(rightIndex, textArea.getText().length()), textArea.getText().length(), "-fx-fill: black;");
     }
 
     private String getValidWord(String word) {
@@ -359,8 +369,6 @@ public class EditorController implements Initializable {
     }
 
     public void redo() {
-        System.out.println("redo");
-
         this.isUndoRedo = true;
         String redoText = textManipulator.redo();
         if (redoText == null) {

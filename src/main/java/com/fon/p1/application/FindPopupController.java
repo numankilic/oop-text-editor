@@ -5,14 +5,8 @@ package com.fon.p1.application;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

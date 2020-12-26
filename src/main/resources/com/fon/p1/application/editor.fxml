@@ -30,7 +30,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#onFindTextButtonClick" text="Find" />
                         <MenuItem mnemonicParsing="false" onAction="#onReplaceButtonClick" text="Replace" />    
                         <SeparatorMenuItem mnemonicParsing="false" />     
-                        <MenuItem mnemonicParsing="false" onAction="#onSingleTranspositionButtonClick" text="Single Transposisiton" />                   
+                        <MenuItem mnemonicParsing="false" onAction="#onSingleTranspositionButtonClick" text="Single Transposition" />                   
                     </items>
                 </Menu>
             </menus>
