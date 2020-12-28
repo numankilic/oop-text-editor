@@ -292,7 +292,7 @@ public class EditorController implements Initializable {
 
         if (!isSubStrValid) {
             String validWord = this.getValidWord(subStr);
-            if (!subStr.equals(validWord)) {
+            if (!subStr.equalsIgnoreCase(validWord)) {
                 textArea.replaceText(leftIndex, rightIndex, validWord);
                 textArea.setStyle(leftIndex, rightIndex, "-fx-fill: #e58e26;");
             } else {
@@ -301,9 +301,7 @@ public class EditorController implements Initializable {
         } else {
             textArea.setStyle(leftIndex, rightIndex, "-fx-fill: green;");
         }
-//        if (rightIndex >= textArea.getText().length() - 1) {
-//            textArea.appendText(" ");
-//        }
+
         textArea.setStyle(Math.min(rightIndex, textArea.getText().length()), textArea.getText().length(), "-fx-fill: black;");
     }
 
@@ -312,7 +310,9 @@ public class EditorController implements Initializable {
     }
 
     public boolean isWordValid(String word) {
-        return this.textManipulator.isValidWord(word.toLowerCase());
+        boolean result = this.textManipulator.isValidWord(word.toLowerCase());
+        System.out.println("lookng:" + word + ":::" + result);
+        return result;
     }
 
     public void findText(String what) {
