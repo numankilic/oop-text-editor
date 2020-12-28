@@ -360,7 +360,7 @@ public class EditorController implements Initializable {
         this.isUndoRedo = true;
         String undoText = textManipulator.undo();
         if (undoText == null) {
-            this.showInfo("Null Stack", "", "Nothing to undo in stack.");
+            this.showInfo("Warning", "", "Nothing to undo.");
             return;
         }
         textManipulator.pushRedoStack(textArea.getText());
@@ -372,7 +372,7 @@ public class EditorController implements Initializable {
         this.isUndoRedo = true;
         String redoText = textManipulator.redo();
         if (redoText == null) {
-            this.showInfo("Null Stack", "", "Nothing to redo in stack.");
+            this.showInfo("Warning", "", "Nothing to redo.");
             return;
         }
         textManipulator.pushUndoStack(textArea.getText());
