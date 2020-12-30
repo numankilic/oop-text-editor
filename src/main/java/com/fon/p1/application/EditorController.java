@@ -51,6 +51,7 @@ public class EditorController implements Initializable {
     @FXML
     private MenuItem redoButton;
 
+    // dosya işlemlerinde kullanılıyor.
     private String filePath = "";
 
     private TextManipulator textManipulator;
@@ -69,12 +70,15 @@ public class EditorController implements Initializable {
     private boolean isUndoRedo = false;
     private boolean shouldResetStyle = false;
 
+    // editörün başlığındaki yazının güncellenmesi için metot
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
     }
 
+    //FX standart metodu. Run edildikten sonra otomatik çalışıyor.
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //yazılar tek satır halinde olmaması, düzgün bir görünümü olması için kullanılıyor
         textArea.setWrapText(true);
         textArea.setStyle(this.textAreaDefaultStyle);
         try {
@@ -103,6 +107,7 @@ public class EditorController implements Initializable {
         });
     }
 
+    //Dosya açmak için kullanılan metot
     public void openFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
@@ -144,6 +149,7 @@ public class EditorController implements Initializable {
 
     }
 
+    //Dosyayı kaydetmek için kullanılan metot
     public void saveFile() {
 
         if (!this.filePath.equals("")) {
@@ -159,11 +165,12 @@ public class EditorController implements Initializable {
                 alert.showAndWait();
             }
         } else {
-            this.saveAsFile();
+            this.saveAsFile();      //Eğer dosya ilk kez oluşturulmuşsa Save As çalışır.
         }
 
     }
 
+    // Dosyayı farklı kaydetmek için kullanılan metot
     public void saveAsFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file");
@@ -184,10 +191,12 @@ public class EditorController implements Initializable {
 
     }
 
+    //Açık olan dosyayı kapatıp ekrana temiz bir sayfa gelmesini sağlar
     public void closeFile() {
         this.newFile();
     }
 
+    //Yeni sayfa açmaya yarar
     public void newFile() {
         filePath = "";
         this.updateTitle("*New");
@@ -196,6 +205,7 @@ public class EditorController implements Initializable {
         textManipulator.resetRedoStack();
     }
 
+    //find butonuna basıldığında çalışır
     public void onFindTextButtonClick() {
 
         // reset lastFindIndex
@@ -219,6 +229,7 @@ public class EditorController implements Initializable {
         }
     }
 
+    //Replace buttonuna basıldığında çalışır
     public void onReplaceButtonClick() {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("replace_popup.fxml"));
@@ -240,6 +251,7 @@ public class EditorController implements Initializable {
         }
     }
 
+    //Single Transpositon buttonuna basıldığında çalışır
     public void onSingleTranspositionButtonClick() {
 
         int left = 0;
@@ -285,6 +297,8 @@ public class EditorController implements Initializable {
         shouldResetStyle = true;
     }
 
+    
+    //kelimeleri single transposition için kontrol etmeye yarayan metot
     private void validateSubStr(int leftIndex, int rightIndex) {
         String subStr = textArea.getText().substring(leftIndex, rightIndex);
 
@@ -305,6 +319,7 @@ public class EditorController implements Initializable {
         textArea.setStyle(Math.min(rightIndex, textArea.getText().length()), textArea.getText().length(), "-fx-fill: black;");
     }
 
+    
     private String getValidWord(String word) {
         return this.textManipulator.getValidForm(word.toLowerCase());
     }
@@ -315,6 +330,7 @@ public class EditorController implements Initializable {
         return result;
     }
 
+    //find ve replace menüleri içindeki find text fonksiyonunu çalıştırır.
     public void findText(String what) {
         int from = textManipulator.findText(what, textArea.getText(), this.lastFindIndex);
         if (from == -1 && this.lastFindIndex != 0 || !this.lastSearched.equals(what)) {
@@ -333,6 +349,7 @@ public class EditorController implements Initializable {
 
     }
 
+    //replace menüsündeki replace fonksiyonunu çalıştırır
     public void replaceText(String current, String replace) {
         int start, stop;
         start = textManipulator.findText(current, textArea.getText(), 0);
@@ -346,6 +363,7 @@ public class EditorController implements Initializable {
 
     }
 
+    //Replace menüsündeki replace all fonksiyonunu çalıştırır
     public void replaceAllText(String current, String replace) {
         int start = textManipulator.findText(current, textArea.getText(), 0);
         if (start == -1) {
@@ -356,6 +374,7 @@ public class EditorController implements Initializable {
         textArea.replaceText(currentText);
     }
 
+    //Undo fonksiyonunu çalıştırır
     public void undo() {
         this.isUndoRedo = true;
         String undoText = textManipulator.undo();
@@ -368,6 +387,7 @@ public class EditorController implements Initializable {
 
     }
 
+    //Redo fonksiyonunu çalıştırır
     public void redo() {
         this.isUndoRedo = true;
         String redoText = textManipulator.redo();
@@ -379,6 +399,7 @@ public class EditorController implements Initializable {
         textArea.replaceText(redoText);
     }
 
+    // bilgilendirme mesajı verilmek isteneceği zaman kullanılır
     public void showInfo(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -387,6 +408,7 @@ public class EditorController implements Initializable {
         alert.showAndWait();
     }
 
+    //hata mesajı verilmek isteneceği zaman kullanılır
     public void showError(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
