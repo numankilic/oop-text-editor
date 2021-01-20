@@ -9,23 +9,25 @@ import org.fxmisc.richtext.InlineCssTextArea;
 
 /**
  *
- * @author pepper
+ * @author Numan
  */
-public class DeleteCommand implements UndoableCommand{
+public class BackSpaceCommand implements UndoableCommand{
     
     private int index;
     private String text;
     private InlineCssTextArea textArea;
     
-    public DeleteCommand(InlineCssTextArea textArea, int index, String text){
+    public BackSpaceCommand(InlineCssTextArea textArea, int index, String text){
         this.index = index;
         this.textArea = textArea;
         this.text = text;
-        System.out.println("Created Delete Command index: "+index + ", text: " + text);
+        System.out.println("Created BackSpace Command index: "+index + ", text: " + text);
     }
 
     @Override
     public void undo() {
+        
+        System.out.println("deneme");
         textArea.insertText(index, text);
     }
 

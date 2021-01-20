@@ -17,7 +17,7 @@ public class CommandManager {
     private SizedStack commandRedoStack = new SizedStack<UndoableCommand>(5);
 
     public void executeCommand(Command cmd) {
-        cmd.Execute();
+        cmd.execute();
         if (cmd instanceof UndoableCommand) {
             commandStack.push(cmd);
         }
@@ -27,7 +27,7 @@ public class CommandManager {
         System.out.println("undo");
         if (commandStack.size() > 0) {
             UndoableCommand cmd = (UndoableCommand) commandStack.pop();
-            cmd.Undo();
+            cmd.undo();
             commandRedoStack.push(cmd);
         }
     }
@@ -36,7 +36,7 @@ public class CommandManager {
         System.out.println("redo");
         if (commandRedoStack.size() > 0) {
             UndoableCommand cmd = (UndoableCommand) commandRedoStack.pop();
-            cmd.Redo();
+            cmd.redo();
             commandStack.push(cmd);
         }
     }

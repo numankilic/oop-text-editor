@@ -1,7 +1,9 @@
 package com.fon.p1.application;
 
 import com.fon.p1.text_manipulation.TextManipulator;
+import command.BackSpaceCommand;
 import command.CommandManager;
+import command.DeleteCommand;
 import command.WriteCommand;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
@@ -23,8 +25,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -96,6 +101,7 @@ public class EditorController implements Initializable {
         } catch (FileNotFoundException e) {
             showError("File not found!", "", "Error while opening word list!");
         }
+        
 
 //        textArea.textProperty().addListener(new ChangeListener<String>() {
 //            @Override
@@ -113,24 +119,36 @@ public class EditorController implements Initializable {
 //                }
 //            }
 //        });
+
+
         textArea.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            
+            final KeyCombination ctrlV = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
+            final KeyCombination ctrlX = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
+            
             @Override
             public void handle(KeyEvent t) {
-
-                System.out.println("event: " + t);
-
-                if (t.isShortcutDown()) {
-                    System.out.println("shourtcut");
+                int position = textArea.getCaretPosition();
+                
+                if (ctrlV.match(t)) {
+                    
+                    System.out.println("pasted");
                     // System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
-                } else if (t.getCode() == KeyCode.BACK_SPACE) {
-                    System.out.println("backspace");
+                } else if(ctrlX.match(t)){
+                    System.out.println("cut");
+                }
+                  else if (t.getCode() == KeyCode.BACK_SPACE) {
+                    System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+                    BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,textArea.getCaretPosition()-1, textArea.getText().substring(position-1,position));
+                    cmdMgr.executeCommand(backspaceCommand);
 
                 } else if (t.getCode() == KeyCode.DELETE) {
-                    System.out.println("delete");
+                    DeleteCommand deleteCommand = new DeleteCommand(textArea,textArea.getCaretPosition(),t.getText());
+                    cmdMgr.executeCommand(deleteCommand);
 
                 } else if (!t.getText().equals(null)) {
-                    WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), t.getText());
-                    cmdMgr.executeCommand(newCmd);
+                    WriteCommand writeCommand = new WriteCommand(textArea, textArea.getCaretPosition(), t.getText());
+                    cmdMgr.executeCommand(writeCommand);
                 }
 
             }

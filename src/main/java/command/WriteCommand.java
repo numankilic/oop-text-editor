@@ -25,15 +25,15 @@ public class WriteCommand implements UndoableCommand {
         System.out.println("Created Write Command index: "+index + ", text: " + text);
     }
 
-    public void Execute() {
+    public void execute() {
         // will be executed any way
     }
 
-    public void Undo() {
+    public void undo() {
         textArea.deleteText(index, index + text.length());
     }
 
-    public void Redo() {
+    public void redo() {
         textArea.insertText(index, text);
     }
 
