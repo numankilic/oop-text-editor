@@ -1,6 +1,8 @@
 package com.fon.p1.application;
 
 import com.fon.p1.text_manipulation.TextManipulator;
+import command.CommandManager;
+import command.WriteCommand;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -12,14 +14,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
@@ -70,6 +72,9 @@ public class EditorController implements Initializable {
     private boolean isUndoRedo = false;
     private boolean shouldResetStyle = false;
 
+    //////
+    private CommandManager cmdMgr = new CommandManager();
+    //////
     // editörün başlığındaki yazının güncellenmesi için metot
     private void updateTitle(String title) {
         ((Stage) editorAnchor.getScene().getWindow()).setTitle("FON | TextEditor | " + title);
@@ -86,25 +91,6 @@ public class EditorController implements Initializable {
         } catch (FileNotFoundException e) {
             showError("File not found!", "", "Error while opening word list!");
         }
-
-        // text area üzerinde bir değişiklik olduğunda undo-redo işlemlerini ele 
-        // alabilmek için textin önceki versiyonunu kayıt altına alır.
-        textArea.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> ov, String oldText, String newText) {
-                if (isUndoRedo) {
-                    isUndoRedo = false;
-                } else {
-                    textManipulator.pushUndoStack(oldText);
-                    textManipulator.resetRedoStack();
-                }
-                
-                if(shouldResetStyle){
-                    textArea.setStyle(0, textArea.getText().length(), textAreaDefaultStyle);
-                    shouldResetStyle = false;
-                }
-            }
-        });
     }
 
     //Dosya açmak için kullanılan metot
@@ -297,7 +283,6 @@ public class EditorController implements Initializable {
         shouldResetStyle = true;
     }
 
-    
     //kelimeleri single transposition için kontrol etmeye yarayan metot
     private void validateSubStr(int leftIndex, int rightIndex) {
         String subStr = textArea.getText().substring(leftIndex, rightIndex);
@@ -319,7 +304,6 @@ public class EditorController implements Initializable {
         textArea.setStyle(Math.min(rightIndex, textArea.getText().length()), textArea.getText().length(), "-fx-fill: black;");
     }
 
-    
     private String getValidWord(String word) {
         return this.textManipulator.getValidForm(word.toLowerCase());
     }
@@ -376,27 +360,18 @@ public class EditorController implements Initializable {
 
     //Undo fonksiyonunu çalıştırır
     public void undo() {
-        this.isUndoRedo = true;
-        String undoText = textManipulator.undo();
-        if (undoText == null) {
-            this.showInfo("Warning", "", "Nothing to undo.");
-            return;
-        }
-        textManipulator.pushRedoStack(textArea.getText());
-        textArea.replaceText(undoText);
+        cmdMgr.undoCommand();
+    }
 
+    @FXML
+    public void handleKeyPressTextArea(javafx.scene.input.KeyEvent e) {
+        WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), e.getText());
+        cmdMgr.executeCommand(newCmd);
     }
 
     //Redo fonksiyonunu çalıştırır
     public void redo() {
-        this.isUndoRedo = true;
-        String redoText = textManipulator.redo();
-        if (redoText == null) {
-            this.showInfo("Warning", "", "Nothing to redo.");
-            return;
-        }
-        textManipulator.pushUndoStack(textArea.getText());
-        textArea.replaceText(redoText);
+        cmdMgr.redoCommand();
     }
 
     // bilgilendirme mesajı verilmek isteneceği zaman kullanılır
