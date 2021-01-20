@@ -14,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +23,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -74,6 +78,7 @@ public class EditorController implements Initializable {
 
     //////
     private CommandManager cmdMgr = new CommandManager();
+
     //////
     // editörün başlığındaki yazının güncellenmesi için metot
     private void updateTitle(String title) {
@@ -91,6 +96,57 @@ public class EditorController implements Initializable {
         } catch (FileNotFoundException e) {
             showError("File not found!", "", "Error while opening word list!");
         }
+
+//        textArea.textProperty().addListener(new ChangeListener<String>() {
+//            @Override
+//            public void changed(ObservableValue<? extends String> ov, String oldText, String newText) {
+//                if (isUndoRedo) {
+//                    isUndoRedo = false;
+//                } else {
+//                    textManipulator.pushUndoStack(oldText);
+//                    textManipulator.resetRedoStack();
+//                }
+//
+//                if (shouldResetStyle) {
+//                    textArea.setStyle(0, textArea.getText().length(), textAreaDefaultStyle);
+//                    shouldResetStyle = false;
+//                }
+//            }
+//        });
+        textArea.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent t) {
+
+                System.out.println("event: " + t);
+
+                if (t.isShortcutDown()) {
+                    System.out.println("shourtcut");
+                    // System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+                } else if (t.getCode() == KeyCode.BACK_SPACE) {
+                    System.out.println("backspace");
+
+                } else if (t.getCode() == KeyCode.DELETE) {
+                    System.out.println("delete");
+
+                } else if (!t.getText().equals(null)) {
+                    WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), t.getText());
+                    cmdMgr.executeCommand(newCmd);
+                }
+
+            }
+        });
+
+//        textArea.addEventFilter(Ev, new EventHandler<KeyEvent>() {
+//            @Override
+//            public void handle(KeyEvent t) {
+//
+//                System.out.println("event: " + t);
+//                System.out.println("text: " + textArea.getText());
+////                WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), e.getText());
+////                cmdMgr.executeCommand(newCmd);
+//
+//            }
+//        });
     }
 
     //Dosya açmak için kullanılan metot
@@ -364,9 +420,16 @@ public class EditorController implements Initializable {
     }
 
     @FXML
-    public void handleKeyPressTextArea(javafx.scene.input.KeyEvent e) {
-        WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), e.getText());
-        cmdMgr.executeCommand(newCmd);
+    public void handleKeyPressTextArea(KeyEvent e) {
+//        WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), e.getText());
+//        cmdMgr.executeCommand(newCmd);
+
+//        System.out.println("e:" + e);
+////        System.out.println("e: "+ e);
+//        System.out.println("text: " + textArea.);
+//        if(e.getCode() == KeyCode.BACK_SPACE){
+//            
+//        }
     }
 
     //Redo fonksiyonunu çalıştırır
