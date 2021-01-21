@@ -8,6 +8,7 @@ package com.fon.p1.text_manipulation;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 /**
@@ -41,6 +42,7 @@ public class WordListManager {
     }
 
     // Binary search ile wordlist üzerinde arama yapar.
+    // Ardışık iterate olmadığı için iterator kullanılmadı.
     public int find(String word) {
         // word > strList[i] listenin sağına bak
         // word < strList[i] listenin soluna bak
@@ -74,8 +76,11 @@ public class WordListManager {
     }
 
     public String getTrueFormForSingleTransposition(String word) {
-        for (int i = 0; i < strList.size(); i++) {
-            String lookFor = strList.get(i);
+        Iterator<String> it = strList.iterator();
+
+        while (it.hasNext()) {
+
+            String lookFor = it.next();
             if (word.length() != lookFor.length()) {
                 continue;
             }
