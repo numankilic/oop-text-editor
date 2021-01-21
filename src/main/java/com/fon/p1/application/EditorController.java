@@ -101,7 +101,6 @@ public class EditorController implements Initializable {
         } catch (FileNotFoundException e) {
             showError("File not found!", "", "Error while opening word list!");
         }
-        
 
 //        textArea.textProperty().addListener(new ChangeListener<String>() {
 //            @Override
@@ -119,34 +118,46 @@ public class EditorController implements Initializable {
 //                }
 //            }
 //        });
-
-
         textArea.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            
+
             final KeyCombination ctrlV = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
+            final KeyCombination up = new KeyCodeCombination(KeyCode.UP);
+            final KeyCombination right = new KeyCodeCombination(KeyCode.RIGHT);
+            final KeyCombination left = new KeyCodeCombination(KeyCode.LEFT);
+            final KeyCombination down = new KeyCodeCombination(KeyCode.DOWN);
             final KeyCombination ctrlX = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
-            
+            boolean arrowKeys = false;
+
             @Override
             public void handle(KeyEvent t) {
                 int position = textArea.getCaretPosition();
-                
+                if (up.match(t) || right.match(t) || left.match(t) || down.match(t)) {
+                    arrowKeys = true;
+                }
                 if (ctrlV.match(t)) {
-                    
                     System.out.println("pasted");
                     // System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
-                } else if(ctrlX.match(t)){
+                } else if (ctrlX.match(t)) {
                     System.out.println("cut");
-                }
-                  else if (t.getCode() == KeyCode.BACK_SPACE) {
-                    System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
-                    BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,textArea.getCaretPosition()-1, textArea.getText().substring(position-1,position));
-                    cmdMgr.executeCommand(backspaceCommand);
+                } else if (t.getCode() == KeyCode.BACK_SPACE) {
+                    System.out.println("text: " + textArea.getText() + ", select range:"
+                            + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+                    if (textArea.getSelectedText().length() >= 1) {
+                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,
+                                textArea.getCaretPosition(), textArea.getSelectedText());
+                        cmdMgr.executeCommand(backspaceCommand);
+
+                    } else {
+                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,
+                                textArea.getCaretPosition() - 1, textArea.getText().substring(position - 1, position));
+                        cmdMgr.executeCommand(backspaceCommand);
+                    }
 
                 } else if (t.getCode() == KeyCode.DELETE) {
-                    DeleteCommand deleteCommand = new DeleteCommand(textArea,textArea.getCaretPosition(),t.getText());
+                    DeleteCommand deleteCommand = new DeleteCommand(textArea, textArea.getCaretPosition(), t.getText());
                     cmdMgr.executeCommand(deleteCommand);
 
-                } else if (!t.getText().equals(null)) {
+                } else if (!t.getText().equals(null) && !arrowKeys) {
                     WriteCommand writeCommand = new WriteCommand(textArea, textArea.getCaretPosition(), t.getText());
                     cmdMgr.executeCommand(writeCommand);
                 }
