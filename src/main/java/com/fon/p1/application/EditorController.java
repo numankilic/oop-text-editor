@@ -5,6 +5,7 @@ import command.BackSpaceCommand;
 import command.CommandManager;
 import command.DeleteCommand;
 import command.WriteCommand;
+import factory.AlertFactory;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -83,6 +84,7 @@ public class EditorController implements Initializable {
 
     //////
     private CommandManager cmdMgr = new CommandManager();
+    private AlertFactory alertFactory = new AlertFactory();
 
     //////
     // editörün başlığındaki yazının güncellenmesi için metot
@@ -99,7 +101,7 @@ public class EditorController implements Initializable {
         try {
             this.textManipulator = new TextManipulator();
         } catch (FileNotFoundException e) {
-            showError("File not found!", "", "Error while opening word list!");
+            alertFactory.getAlert("filenotfound").alert();
         }
 
 //        textArea.textProperty().addListener(new ChangeListener<String>() {
@@ -207,11 +209,7 @@ public class EditorController implements Initializable {
                 }
                 reader.close();
             } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Alert");
-                alert.setHeaderText(e.getLocalizedMessage());
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                alertFactory.getAlert("filereaderror").alert();
             }
 
         }
@@ -229,11 +227,7 @@ public class EditorController implements Initializable {
                 writer.write(textArea.getText());
                 writer.close();
             } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText(e.getLocalizedMessage());
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                alertFactory.getAlert("filesaveerror").alert();
             }
         } else {
             this.saveAsFile();      //Eğer dosya ilk kez oluşturulmuşsa Save As çalışır.
@@ -411,7 +405,7 @@ public class EditorController implements Initializable {
             textArea.requestFocus();
             textArea.selectRange(from, this.lastFindIndex);
         } else {
-            showInfo("Not Found", "", "Text not found");
+            alertFactory.getAlert("textnotfound").alert();
         }
 
         lastSearched = what;
@@ -424,7 +418,7 @@ public class EditorController implements Initializable {
         start = textManipulator.findText(current, textArea.getText(), 0);
 
         if (start == -1) {
-            showInfo("Not Found", "", "Text not found");
+            alertFactory.getAlert("textnotfound").alert();
         } else {
             stop = start + current.length();
             textArea.replaceText(start, stop, replace);
@@ -436,7 +430,7 @@ public class EditorController implements Initializable {
     public void replaceAllText(String current, String replace) {
         int start = textManipulator.findText(current, textArea.getText(), 0);
         if (start == -1) {
-            showInfo("Not Found", "", "Text not found");
+            alertFactory.getAlert("textnotfound").alert();
         }
         String currentText = textArea.getText();
         currentText = currentText.replaceAll(current, replace);
@@ -464,24 +458,6 @@ public class EditorController implements Initializable {
     //Redo fonksiyonunu çalıştırır
     public void redo() {
         cmdMgr.redoCommand();
-    }
-
-    // bilgilendirme mesajı verilmek isteneceği zaman kullanılır
-    public void showInfo(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    //hata mesajı verilmek isteneceği zaman kullanılır
-    public void showError(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 
 }
