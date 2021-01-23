@@ -31,7 +31,7 @@ public class CommandManager {
             commandRedoStack.push(cmd);
         }
     }
-    
+
     public void redoCommand() {
         System.out.println("redo");
         if (commandRedoStack.size() > 0) {
@@ -39,5 +39,13 @@ public class CommandManager {
             cmd.redo();
             commandStack.push(cmd);
         }
+    }
+
+    public void resetUndo() {
+        commandStack.clear();
+    }
+
+    public void resetRedo() {
+        commandRedoStack.clear();
     }
 }

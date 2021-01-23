@@ -29,7 +29,7 @@ public class FindPopupController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-     
+        
     }
 
     public void onSearchBoxTextChanged() {
