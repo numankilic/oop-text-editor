@@ -3,20 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package factory;
+package com.fon.p1.abstractFactory.errorFactory;
+
+import com.fon.p1.abstractFactory.errorFactory.Error;
 
 /**
  *
  * @author pepper
  */
-public class FileReadErrorAlert implements Alert{
+public class FileSaveErrorError implements Error {
 
     @Override
-    public void alert() {
+    public void error() {
         javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-        alert.setTitle("File read error!");
-        alert.setHeaderText("File read error!");
-        alert.setContentText("Error while reading file!");
+        alert.setTitle("Error!");
+        alert.setHeaderText("Error!");
+        alert.setContentText("Error while saving file!");
         alert.showAndWait();
     }
 }

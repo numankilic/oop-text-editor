@@ -37,7 +37,7 @@
         </MenuBar>
         <AnchorPane fx:id="editorAnchor" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
             <children>
-                <org.fxmisc.richtext.InlineCssTextArea fx:id="textArea" layoutX="-3.0" onKeyPressed="#handleKeyPressTextArea"  prefHeight="375.0" prefWidth="603.0" style="-fx-min-height: 100; -fx-min-width: 100;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <org.fxmisc.richtext.InlineCssTextArea fx:id="textArea" layoutX="-3.0"   prefHeight="375.0" prefWidth="603.0" style="-fx-min-height: 100; -fx-min-width: 100;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
         </AnchorPane>
     </children>

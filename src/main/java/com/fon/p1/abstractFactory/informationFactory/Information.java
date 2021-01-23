@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package factory;
+package com.fon.p1.abstractFactory.informationFactory;
 
 /**
  *
- * @author pepper
+ * @author Numan
  */
-public interface Alert {
-
-    void alert();
+public interface Information {
+    
+    void info();
+    
 }
