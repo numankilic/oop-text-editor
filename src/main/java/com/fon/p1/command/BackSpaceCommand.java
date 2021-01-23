@@ -3,37 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package command;
+package com.fon.p1.command;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
 /**
  *
- * @author pepper
+ * @author Numan
  */
-public class WriteCommand implements UndoableCommand {
+public class BackSpaceCommand implements UndoableCommand {
 
     private int index;
     private String text;
     private InlineCssTextArea textArea;
 
-    public WriteCommand(InlineCssTextArea textArea, int index, String text) {
-        this.textArea = textArea;
+    public BackSpaceCommand(InlineCssTextArea textArea, int index, String text) {
         this.index = index;
+        this.textArea = textArea;
         this.text = text;
-        System.out.println("Created Write Command index: " + index + ", text: " + text);
+        System.out.println("Created BackSpace Command index: " + index + ", text: " + text);
     }
 
-    public void execute() {
-        // will be executed any way
-    }
-
+    @Override
     public void undo() {
+        textArea.insertText(index, text);
+    }
+
+    @Override
+    public void redo() {
         textArea.deleteText(index, index + text.length());
     }
 
-    public void redo() {
-        textArea.insertText(index, text);
+    @Override
+    public void execute() {
+
     }
 
 }

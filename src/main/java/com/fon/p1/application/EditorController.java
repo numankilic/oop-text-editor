@@ -3,12 +3,12 @@ package com.fon.p1.application;
 import com.fon.p1.abstractFactory.AbstractFactory;
 import com.fon.p1.abstractFactory.FactoryProducer;
 import com.fon.p1.text_manipulation.TextManipulator;
-import command.BackSpaceCommand;
-import command.CommandManager;
-import command.CutCommand;
-import command.DeleteCommand;
-import command.PasteCommand;
-import command.WriteCommand;
+import com.fon.p1.command.BackSpaceCommand;
+import com.fon.p1.command.CommandManager;
+import com.fon.p1.command.CutCommand;
+import com.fon.p1.command.DeleteCommand;
+import com.fon.p1.command.PasteCommand;
+import com.fon.p1.command.WriteCommand;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -105,22 +105,7 @@ public class EditorController implements Initializable {
             errorFactory.getAlert("filenotfound").error();
         }
 
-//        textArea.textProperty().addListener(new ChangeListener<String>() {
-//            @Override
-//            public void changed(ObservableValue<? extends String> ov, String oldText, String newText) {
-//                if (isUndoRedo) {
-//                    isUndoRedo = false;
-//                } else {
-//                    textManipulator.pushUndoStack(oldText);
-//                    textManipulator.resetRedoStack();
-//                }
-//
-//                if (shouldResetStyle) {
-//                    textArea.setStyle(0, textArea.getText().length(), textAreaDefaultStyle);
-//                    shouldResetStyle = false;
-//                }
-//            }
-//        });
+
         textArea.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 
             final KeyCombination ctrlV = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
@@ -457,16 +442,4 @@ public class EditorController implements Initializable {
     public void redo() {
         cmdMgr.redoCommand();
     }
-
-    private static int findPosition(InlineCssTextArea textArea, String selectedText) {
-        int position1;
-        int position2;
-        position1 = textArea.getText().indexOf(selectedText);
-        position2 = textArea.getCaretPosition();
-        if (position1 > position2) {
-            return position2;
-        }
-        return position1;
-    }
-
 }

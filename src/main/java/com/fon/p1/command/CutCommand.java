@@ -3,40 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package command;
+package com.fon.p1.command;
 
 import org.fxmisc.richtext.InlineCssTextArea;
 
 /**
  *
- * @author pepper
+ * @author Numan
  */
-public class DeleteCommand implements UndoableCommand{
+public class CutCommand implements UndoableCommand{
     
     private int index;
-    private String text;
     private InlineCssTextArea textArea;
+    String selectedText;
+    //private TextArea textAreaaa;
     
-    public DeleteCommand(InlineCssTextArea textArea, int index, String text){
-        this.index = index;
+    public CutCommand(InlineCssTextArea textArea, String text, int index){
         this.textArea = textArea;
-        this.text = text;
-        System.out.println("Created Delete Command index: "+index + ", text: " + text);
+        selectedText = text;
+        this.index = index;
     }
 
     @Override
     public void undo() {
-        textArea.insertText(index, text);
+       
+        textArea.insertText(index, selectedText);
     }
 
     @Override
     public void redo() {
-        textArea.deleteText(index, index + text.length());
+        textArea.deleteText(index, index+selectedText.length());
     }
 
     @Override
     public void execute() {
-        
     }
     
 }

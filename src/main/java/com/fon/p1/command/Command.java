@@ -3,14 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package command;
+package com.fon.p1.command;
 
 /**
  *
  * @author pepper
  */
-public interface UndoableCommand extends Command {
+public interface Command {
 
-    public void undo();
-    public void redo();
+    public void execute();
 }
