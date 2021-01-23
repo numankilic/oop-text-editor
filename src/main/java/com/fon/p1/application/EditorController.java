@@ -9,7 +9,6 @@ import command.CutCommand;
 import command.DeleteCommand;
 import command.PasteCommand;
 import command.WriteCommand;
-import com.fon.p1.abstractFactory.errorFactory.ErrorFactory;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -21,18 +20,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -92,7 +86,6 @@ public class EditorController implements Initializable {
     public boolean isChange = false;
     public AbstractFactory errorFactory = FactoryProducer.getFactory("error");
     public AbstractFactory infoFactory = FactoryProducer.getFactory("information");
-    
 
     //////
     // editörün başlığındaki yazının güncellenmesi için metot
@@ -137,13 +130,10 @@ public class EditorController implements Initializable {
             final KeyCombination down = new KeyCodeCombination(KeyCode.DOWN);
             final KeyCombination ctrlX = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
             boolean arrowKeys = false;
-            
 
             @Override
             public void handle(KeyEvent t) {
 
-                
-               
                 int position = textArea.getCaretPosition();
                 String selectedText = textArea.getSelectedText();
                 boolean shouldDeleteBeforeWrite = false;
@@ -155,21 +145,20 @@ public class EditorController implements Initializable {
                     }
                 }
 
-
                 if (up.match(t) || right.match(t) || left.match(t) || down.match(t)) {
                     arrowKeys = true;
                 }
                 if (ctrlV.match(t)) {
 
                     Clipboard clipboard = Clipboard.getSystemClipboard();
-                    if(clipboard.hasString()){
+                    if (clipboard.hasString()) {
                         PasteCommand pasteCommand = new PasteCommand(textArea, position, clipboard.getString());
-                        cmdMgr.executeCommand(pasteCommand);                        
+                        cmdMgr.executeCommand(pasteCommand);
                     }
-                }else if (ctrlX.match(t)) {
+                } else if (ctrlX.match(t)) {
                     CutCommand cutCommand = new CutCommand(textArea, textArea.getSelectedText(), position);
                     cmdMgr.executeCommand(cutCommand);
-                }else if (t.getCode() == KeyCode.BACK_SPACE) {
+                } else if (t.getCode() == KeyCode.BACK_SPACE) {
                     System.out.println("text: " + textArea.getText() + ", select range:"
                             + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
 
@@ -178,11 +167,11 @@ public class EditorController implements Initializable {
                         BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position, textArea.getSelectedText());
                         cmdMgr.executeCommand(backspaceCommand);
 
-
                     } else {
-                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position - 1, textArea.getText().substring(position - 1, position));
-
-                        cmdMgr.executeCommand(backspaceCommand);
+                        if (textArea.getText().length() != 0) {
+                            BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position - 1, textArea.getText().substring(position - 1, position));
+                            cmdMgr.executeCommand(backspaceCommand);
+                        }
                     }
 
                 } else if (t.getCode() == KeyCode.DELETE) {
@@ -468,13 +457,15 @@ public class EditorController implements Initializable {
     public void redo() {
         cmdMgr.redoCommand();
     }
-    
-    private static int findPosition(InlineCssTextArea textArea, String selectedText){
+
+    private static int findPosition(InlineCssTextArea textArea, String selectedText) {
         int position1;
         int position2;
         position1 = textArea.getText().indexOf(selectedText);
         position2 = textArea.getCaretPosition();
-        if(position1>position2)return position2;
+        if (position1 > position2) {
+            return position2;
+        }
         return position1;
     }
 
