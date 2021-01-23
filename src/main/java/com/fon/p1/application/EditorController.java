@@ -141,12 +141,26 @@ public class EditorController implements Initializable {
 
             @Override
             public void handle(KeyEvent t) {
+
                 
-                int position = findPosition(textArea, textArea.getSelectedText());
+               
+                int position = textArea.getCaretPosition();
+                String selectedText = textArea.getSelectedText();
+                boolean shouldDeleteBeforeWrite = false;
+                if (selectedText.length() > 0) {
+                    shouldDeleteBeforeWrite = true;
+                    String selected = position + selectedText.length() <= textArea.getText().length() ? textArea.getText().substring(position, position + selectedText.length()) : "";
+                    if (!selected.equals(selectedText)) {
+                        position = position - selectedText.length();
+                    }
+                }
+
+
                 if (up.match(t) || right.match(t) || left.match(t) || down.match(t)) {
                     arrowKeys = true;
                 }
                 if (ctrlV.match(t)) {
+
                     Clipboard clipboard = Clipboard.getSystemClipboard();
                     if(clipboard.hasString()){
                         PasteCommand pasteCommand = new PasteCommand(textArea, position, clipboard.getString());
@@ -158,14 +172,16 @@ public class EditorController implements Initializable {
                 }else if (t.getCode() == KeyCode.BACK_SPACE) {
                     System.out.println("text: " + textArea.getText() + ", select range:"
                             + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+
                     if (textArea.getSelectedText().length() >= 1) {
-                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,
-                                textArea.getCaretPosition(), textArea.getSelectedText());
+
+                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position, textArea.getSelectedText());
                         cmdMgr.executeCommand(backspaceCommand);
 
-                    }else {
-                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea,
-                                textArea.getCaretPosition() - 1, textArea.getText().substring(position - 1, position));
+
+                    } else {
+                        BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position - 1, textArea.getText().substring(position - 1, position));
+
                         cmdMgr.executeCommand(backspaceCommand);
                     }
 
@@ -173,25 +189,20 @@ public class EditorController implements Initializable {
                     DeleteCommand deleteCommand = new DeleteCommand(textArea, textArea.getCaretPosition(), t.getText());
                     cmdMgr.executeCommand(deleteCommand);
 
-                } else if (!t.getText().equals(null) && !arrowKeys) {
-                    WriteCommand writeCommand = new WriteCommand(textArea, textArea.getCaretPosition(), t.getText());
+                } else if (t.getText() != null && !t.isShortcutDown()) {
+                    if (shouldDeleteBeforeWrite) {
+                        System.out.println("position for delete" + position);
+                        DeleteCommand deleteCommand = new DeleteCommand(textArea, position, selectedText);
+                        cmdMgr.executeCommand(deleteCommand);
+                    }
+                    System.out.println("position for write" + position);
+                    WriteCommand writeCommand = new WriteCommand(textArea, position, t.getText());
                     cmdMgr.executeCommand(writeCommand);
                 }
 
             }
         });
 
-//        textArea.addEventFilter(Ev, new EventHandler<KeyEvent>() {
-//            @Override
-//            public void handle(KeyEvent t) {
-//
-//                System.out.println("event: " + t);
-//                System.out.println("text: " + textArea.getText());
-////                WriteCommand newCmd = new WriteCommand(textArea, textArea.getCaretPosition(), e.getText());
-////                cmdMgr.executeCommand(newCmd);
-//
-//            }
-//        });
     }
 
     //Dosya açmak için kullanılan metot
@@ -227,9 +238,8 @@ public class EditorController implements Initializable {
             }
 
         }
-        textManipulator.resetUndoStack();
-        textManipulator.resetRedoStack();
-
+        cmdMgr.resetUndo();
+        cmdMgr.resetRedo();
     }
 
     //Dosyayı kaydetmek için kullanılan metot
@@ -280,8 +290,8 @@ public class EditorController implements Initializable {
         filePath = "";
         this.updateTitle("*New");
         textArea.replaceText("");
-        textManipulator.resetUndoStack();
-        textManipulator.resetRedoStack();
+        cmdMgr.resetUndo();
+        cmdMgr.resetRedo();
     }
 
     //find butonuna basıldığında çalışır
@@ -402,9 +412,7 @@ public class EditorController implements Initializable {
     }
 
     public boolean isWordValid(String word) {
-        boolean result = this.textManipulator.isValidWord(word.toLowerCase());
-        System.out.println("lookng:" + word + ":::" + result);
-        return result;
+        return this.textManipulator.isValidWord(word.toLowerCase());
     }
 
     //find ve replace menüleri içindeki find text fonksiyonunu çalıştırır.
@@ -455,7 +463,6 @@ public class EditorController implements Initializable {
     public void undo() {
         cmdMgr.undoCommand();
     }
-
 
     //Redo fonksiyonunu çalıştırır
     public void redo() {

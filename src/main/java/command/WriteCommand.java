@@ -5,7 +5,6 @@
  */
 package command;
 
-import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.InlineCssTextArea;
 
 /**
@@ -22,7 +21,7 @@ public class WriteCommand implements UndoableCommand {
         this.textArea = textArea;
         this.index = index;
         this.text = text;
-        System.out.println("Created Write Command index: "+index + ", text: " + text);
+        System.out.println("Created Write Command index: " + index + ", text: " + text);
     }
 
     public void execute() {
