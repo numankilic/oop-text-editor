@@ -1,11 +1,15 @@
 package com.fon.p1.application;
 
+import com.fon.p1.abstractFactory.AbstractFactory;
+import com.fon.p1.abstractFactory.FactoryProducer;
 import com.fon.p1.text_manipulation.TextManipulator;
 import command.BackSpaceCommand;
 import command.CommandManager;
+import command.CutCommand;
 import command.DeleteCommand;
+import command.PasteCommand;
 import command.WriteCommand;
-import factory.AlertFactory;
+import com.fon.p1.abstractFactory.errorFactory.ErrorFactory;
 import java.io.BufferedReader;
 import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
@@ -27,6 +31,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -84,7 +89,10 @@ public class EditorController implements Initializable {
 
     //////
     private CommandManager cmdMgr = new CommandManager();
-    private AlertFactory alertFactory = new AlertFactory();
+    public boolean isChange = false;
+    public AbstractFactory errorFactory = FactoryProducer.getFactory("error");
+    public AbstractFactory infoFactory = FactoryProducer.getFactory("information");
+    
 
     //////
     // editörün başlığındaki yazının güncellenmesi için metot
@@ -101,7 +109,7 @@ public class EditorController implements Initializable {
         try {
             this.textManipulator = new TextManipulator();
         } catch (FileNotFoundException e) {
-            alertFactory.getAlert("filenotfound").alert();
+            errorFactory.getAlert("filenotfound").error();
         }
 
 //        textArea.textProperty().addListener(new ChangeListener<String>() {
@@ -129,9 +137,13 @@ public class EditorController implements Initializable {
             final KeyCombination down = new KeyCodeCombination(KeyCode.DOWN);
             final KeyCombination ctrlX = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
             boolean arrowKeys = false;
+            
 
             @Override
             public void handle(KeyEvent t) {
+
+                
+               
                 int position = textArea.getCaretPosition();
                 String selectedText = textArea.getSelectedText();
                 boolean shouldDeleteBeforeWrite = false;
@@ -143,23 +155,33 @@ public class EditorController implements Initializable {
                     }
                 }
 
+
                 if (up.match(t) || right.match(t) || left.match(t) || down.match(t)) {
                     arrowKeys = true;
                 }
                 if (ctrlV.match(t)) {
-                    System.out.println("pasted");
-                    // System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
-                } else if (ctrlX.match(t)) {
-                    System.out.println("cut");
-                } else if (t.getCode() == KeyCode.BACK_SPACE) {
-                    System.out.println("text: " + textArea.getText() + ", select range:" + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+
+                    Clipboard clipboard = Clipboard.getSystemClipboard();
+                    if(clipboard.hasString()){
+                        PasteCommand pasteCommand = new PasteCommand(textArea, position, clipboard.getString());
+                        cmdMgr.executeCommand(pasteCommand);                        
+                    }
+                }else if (ctrlX.match(t)) {
+                    CutCommand cutCommand = new CutCommand(textArea, textArea.getSelectedText(), position);
+                    cmdMgr.executeCommand(cutCommand);
+                }else if (t.getCode() == KeyCode.BACK_SPACE) {
+                    System.out.println("text: " + textArea.getText() + ", select range:"
+                            + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
+
                     if (textArea.getSelectedText().length() >= 1) {
 
                         BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position, textArea.getSelectedText());
                         cmdMgr.executeCommand(backspaceCommand);
 
+
                     } else {
                         BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position - 1, textArea.getText().substring(position - 1, position));
+
                         cmdMgr.executeCommand(backspaceCommand);
                     }
 
@@ -212,7 +234,7 @@ public class EditorController implements Initializable {
                 }
                 reader.close();
             } catch (Exception e) {
-                alertFactory.getAlert("filereaderror").alert();
+                errorFactory.getAlert("filereaderror").error();
             }
 
         }
@@ -229,7 +251,7 @@ public class EditorController implements Initializable {
                 writer.write(textArea.getText());
                 writer.close();
             } catch (Exception e) {
-                alertFactory.getAlert("filesaveerror").alert();
+                errorFactory.getAlert("filesaveerror").error();
             }
         } else {
             this.saveAsFile();      //Eğer dosya ilk kez oluşturulmuşsa Save As çalışır.
@@ -405,7 +427,7 @@ public class EditorController implements Initializable {
             textArea.requestFocus();
             textArea.selectRange(from, this.lastFindIndex);
         } else {
-            alertFactory.getAlert("textnotfound").alert();
+            infoFactory.getInformation("TextNotFound").info();
         }
 
         lastSearched = what;
@@ -418,7 +440,7 @@ public class EditorController implements Initializable {
         start = textManipulator.findText(current, textArea.getText(), 0);
 
         if (start == -1) {
-            alertFactory.getAlert("textnotfound").alert();
+            infoFactory.getInformation("TextNotFound").info();
         } else {
             stop = start + current.length();
             textArea.replaceText(start, stop, replace);
@@ -430,7 +452,7 @@ public class EditorController implements Initializable {
     public void replaceAllText(String current, String replace) {
         int start = textManipulator.findText(current, textArea.getText(), 0);
         if (start == -1) {
-            alertFactory.getAlert("textnotfound").alert();
+            infoFactory.getInformation("TextNotFound").info();
         }
         String currentText = textArea.getText();
         currentText = currentText.replaceAll(current, replace);
@@ -445,6 +467,15 @@ public class EditorController implements Initializable {
     //Redo fonksiyonunu çalıştırır
     public void redo() {
         cmdMgr.redoCommand();
+    }
+    
+    private static int findPosition(InlineCssTextArea textArea, String selectedText){
+        int position1;
+        int position2;
+        position1 = textArea.getText().indexOf(selectedText);
+        position2 = textArea.getCaretPosition();
+        if(position1>position2)return position2;
+        return position1;
     }
 
 }
