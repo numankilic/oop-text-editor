@@ -1,5 +1,9 @@
 package com.fon.p1.application;
 
+import Strategy.SaveAs;
+import Strategy.SaveFunctions;
+import Strategy.SaveNormal;
+import Strategy.Strategy;
 import com.fon.p1.abstractFactory.AbstractFactory;
 import com.fon.p1.abstractFactory.FactoryProducer;
 import com.fon.p1.text_manipulation.TextManipulator;
@@ -36,15 +40,6 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import org.fxmisc.richtext.InlineCssTextArea;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author pepper
- */
 public class EditorController implements Initializable {
 
     @FXML
@@ -55,12 +50,6 @@ public class EditorController implements Initializable {
 
     @FXML
     private InlineCssTextArea textArea;
-
-    @FXML
-    private MenuItem undoButton;
-
-    @FXML
-    private MenuItem redoButton;
 
     // dosya işlemlerinde kullanılıyor.
     private String filePath = "";
@@ -76,9 +65,6 @@ public class EditorController implements Initializable {
     // Varsayılan textArea stili
     private String textAreaDefaultStyle = "-fx-font-size: 18px; -fx-padding: 10px; -fx-fill: #000000;";
 
-    private int pressedKeyIndex;
-
-    private boolean isUndoRedo = false;
     private boolean shouldResetStyle = false;
 
     //////
@@ -86,6 +72,8 @@ public class EditorController implements Initializable {
     public boolean isChange = false;
     public AbstractFactory errorFactory = FactoryProducer.getFactory("error");
     public AbstractFactory infoFactory = FactoryProducer.getFactory("information");
+    private SaveFunctions saveNormalFunction = new SaveFunctions(new SaveNormal());
+    private SaveFunctions saveAsFunction = new SaveFunctions(new SaveAs());
 
     //////
     // editörün başlığındaki yazının güncellenmesi için metot
@@ -104,7 +92,6 @@ public class EditorController implements Initializable {
         } catch (FileNotFoundException e) {
             errorFactory.getAlert("filenotfound").error();
         }
-
 
         textArea.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 
@@ -218,40 +205,18 @@ public class EditorController implements Initializable {
 
     //Dosyayı kaydetmek için kullanılan metot
     public void saveFile() {
-
-        if (!this.filePath.equals("")) {
-            try {
-                FileWriter writer = new FileWriter(this.filePath);
-                writer.write(textArea.getText());
-                writer.close();
-            } catch (Exception e) {
-                errorFactory.getAlert("filesaveerror").error();
-            }
+        if (this.filePath.equals("")) {
+            saveAsFile();
         } else {
-            this.saveAsFile();      //Eğer dosya ilk kez oluşturulmuşsa Save As çalışır.
+            this.filePath = saveNormalFunction.startSave(this.filePath, textArea.getText());
         }
-
     }
 
     // Dosyayı farklı kaydetmek için kullanılan metot
     public void saveAsFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save file");
-        fileChooser.getExtensionFilters().addAll(new ExtensionFilter("TEXT files (*.txt)", "*.txt"));
-
-        File textFile = fileChooser.showSaveDialog(controllerStage);
-        if (textFile != null) {
-            this.filePath = textFile.getAbsolutePath();
-            this.updateTitle(textFile.getName());
-            try {
-                FileWriter writer = new FileWriter(textFile);
-                writer.write(textArea.getText());
-                writer.close();
-            } catch (IOException e) {
-                System.out.println("File not found");
-            }
-        }
-
+        this.filePath = saveAsFunction.startSave(filePath, textArea.getText());
+        String fileName = this.filePath.substring(this.filePath.lastIndexOf("\\") + 1);
+        this.updateTitle(fileName);
     }
 
     //Açık olan dosyayı kapatıp ekrana temiz bir sayfa gelmesini sağlar
@@ -435,8 +400,8 @@ public class EditorController implements Initializable {
 
     //Undo fonksiyonunu çalıştırır
     public void undo() {
-        if(cmdMgr.isEmptyUndo()){
-            
+        if (cmdMgr.isEmptyUndo()) {
+
             infoFactory.getInformation("NothingToUndo").info();
             return;
         }
@@ -445,7 +410,7 @@ public class EditorController implements Initializable {
 
     //Redo fonksiyonunu çalıştırır
     public void redo() {
-        if(cmdMgr.isEmptyRedo()){
+        if (cmdMgr.isEmptyRedo()) {
             infoFactory.getInformation("NothingToRedo").info();
             return;
         }
