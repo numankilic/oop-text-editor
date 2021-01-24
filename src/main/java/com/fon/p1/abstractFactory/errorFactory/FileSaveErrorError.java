@@ -5,8 +5,6 @@
  */
 package com.fon.p1.abstractFactory.errorFactory;
 
-import com.fon.p1.abstractFactory.errorFactory.Error;
-
 /**
  *
  * @author pepper

@@ -435,11 +435,20 @@ public class EditorController implements Initializable {
 
     //Undo fonksiyonunu çalıştırır
     public void undo() {
+        if(cmdMgr.isEmptyUndo()){
+            
+            infoFactory.getInformation("NothingToUndo").info();
+            return;
+        }
         cmdMgr.undoCommand();
     }
 
     //Redo fonksiyonunu çalıştırır
     public void redo() {
+        if(cmdMgr.isEmptyRedo()){
+            infoFactory.getInformation("NothingToRedo").info();
+            return;
+        }
         cmdMgr.redoCommand();
     }
 }

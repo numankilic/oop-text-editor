@@ -5,8 +5,6 @@
  */
 package com.fon.p1.command;
 
-import com.fon.p1.text_manipulation.SizedStack;
-
 /**
  *
  * @author pepper
@@ -47,5 +45,13 @@ public class CommandManager {
 
     public void resetRedo() {
         commandRedoStack.clear();
+    }
+    
+    public boolean isEmptyUndo(){
+        return commandStack.isEmpty();
+    }
+    
+    public boolean isEmptyRedo(){
+        return commandRedoStack.isEmpty();
     }
 }

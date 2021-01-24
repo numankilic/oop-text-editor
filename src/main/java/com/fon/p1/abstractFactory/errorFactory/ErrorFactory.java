@@ -7,7 +7,6 @@ package com.fon.p1.abstractFactory.errorFactory;
 
 import com.fon.p1.abstractFactory.AbstractFactory;
 import com.fon.p1.abstractFactory.informationFactory.Information;
-import com.fon.p1.abstractFactory.errorFactory.Error;
 
 /**
  *
