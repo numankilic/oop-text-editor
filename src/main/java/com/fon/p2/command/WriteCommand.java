@@ -13,7 +13,6 @@ public class WriteCommand implements UndoableCommand {
         this.textArea = textArea;
         this.index = index;
         this.text = text;
-        System.out.println("Created Write Command index: " + index + ", text: " + text);
     }
 
     public void execute() {

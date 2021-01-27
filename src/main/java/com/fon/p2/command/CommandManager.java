@@ -14,7 +14,6 @@ public class CommandManager {
     }
 
     public void undoCommand() {
-        System.out.println("undo");
         if (commandStack.size() > 0) {
             UndoableCommand cmd = (UndoableCommand) commandStack.pop();
             cmd.undo();
@@ -23,7 +22,6 @@ public class CommandManager {
     }
 
     public void redoCommand() {
-        System.out.println("redo");
         if (commandRedoStack.size() > 0) {
             UndoableCommand cmd = (UndoableCommand) commandRedoStack.pop();
             cmd.redo();

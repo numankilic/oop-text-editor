@@ -115,13 +115,14 @@ public class EditorController implements Initializable {
                     if (!selected.equals(selectedText)) {
                         position = position - selectedText.length();
                     }
+                }else {
+                    selectedText = t.getText();
                 }
 
                 if (up.match(t) || right.match(t) || left.match(t) || down.match(t)) {
                     arrowKeys = true;
                 }
                 if (ctrlV.match(t)) {
-
                     Clipboard clipboard = Clipboard.getSystemClipboard();
                     if (clipboard.hasString()) {
                         PasteCommand pasteCommand = new PasteCommand(textArea, position, clipboard.getString());
@@ -131,32 +132,24 @@ public class EditorController implements Initializable {
                     CutCommand cutCommand = new CutCommand(textArea, textArea.getSelectedText(), position);
                     cmdMgr.executeCommand(cutCommand);
                 } else if (t.getCode() == KeyCode.BACK_SPACE) {
-                    System.out.println("text: " + textArea.getText() + ", select range:"
-                            + textArea.getSelectedText() + ", current index: " + textArea.getCaretPosition());
-
                     if (textArea.getSelectedText().length() >= 1) {
-
                         BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position, textArea.getSelectedText());
                         cmdMgr.executeCommand(backspaceCommand);
-
                     } else {
                         if (textArea.getText().length() != 0) {
                             BackSpaceCommand backspaceCommand = new BackSpaceCommand(textArea, position - 1, textArea.getText().substring(position - 1, position));
                             cmdMgr.executeCommand(backspaceCommand);
                         }
                     }
-
                 } else if (t.getCode() == KeyCode.DELETE) {
-                    DeleteCommand deleteCommand = new DeleteCommand(textArea, textArea.getCaretPosition(), t.getText());
+                    DeleteCommand deleteCommand = new DeleteCommand(textArea, position, t.getText());
                     cmdMgr.executeCommand(deleteCommand);
 
-                } else if (t.getText() != null && !t.isShortcutDown()) {
+                } else if (!selectedText.equals("") && !t.isShortcutDown() && !t.isShiftDown()) {
                     if (shouldDeleteBeforeWrite) {
-                        System.out.println("position for delete" + position);
                         DeleteCommand deleteCommand = new DeleteCommand(textArea, position, selectedText);
                         cmdMgr.executeCommand(deleteCommand);
                     }
-                    System.out.println("position for write" + position);
                     WriteCommand writeCommand = new WriteCommand(textArea, position, t.getText());
                     cmdMgr.executeCommand(writeCommand);
                 }
