@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-import com.fon.p1.text_manipulation.WordListManager;
+import com.fon.p2.text_manipulation.WordListManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import org.junit.jupiter.api.AfterEach;
